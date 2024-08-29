@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container pt-5">
+    <h1>Add Income</h1>
+    <div class="card p-4 mt-4 mb-4 ">
+        
+        <form class="row g-3 text-dark" method="POST">
+          {% csrf_token %}
+            <div class="col-md-6">
+              <label for="amount" class="form-label text-white">Amount</label>
+              <input type="number" class="form-control " name="amount" id="amount" placeholder="Please enter amount">
+            </div>
+            <div class="col-md-6">
+              <label for="amount" class="form-label text-white">Source</label>
+              <select id="source" name="source" class="form-select">
+                {% for source in sources %}
+                  <option value="{{source.source_id}}">{{source.name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+                <label for="currency" class="form-label text-white">Date of Expense</label>
+                <input type="date" class="form-control " name="date" id="date" placeholder="Please enter amount">
+            </div>
+            <div class="col-12">
+              <label for="inputAddress" class="form-label text-white">Description</label>
+              <textarea class="form-control " name="description" rows="3"  placeholder="Enter Description of expense"></textarea>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+              <button type="submit" class="btn btn-light">Save</button>
+            </div>
+          </form>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Expenses List</h2>
+    <div class="card p-3 mt-2">
+        <table class="dataTable">
+            <thead>
+                <tr>
+                    <th>Expense ID</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Date & Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.expense_id }}</td>
+                    <td>{{ expense.amount }}</td>
+                    <td>{{ expense.category_name}}</td>
+                    <td>{{ expense.datetime }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info me-2 edit_expense_btn" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#editExpenseModal"
+                            data-expense-id="{{ expense.expense_id }}"
+                            data-expense-amount="{{ expense.amount }}"
+                            data-expense-category="{{ expense.category_id}}"
+                            data-expense-date="{{ expense.datetime }}"
+                            data-expense-description="{{ expense.description }}"
+                        >Edit</buttton>
+                        
+                        <a href="{% url 'delete_expense' e_id=expense.expense_id %}" style="text-decoration:none" class="text-light" onclick="return confirmDeletion();" ><button class="btn btn-sm btn-danger text-light">Delete</buttom></a>
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% comment %} <!-- Charts -->
+<div id="categoryChart"></div>
+<div id="timeChart"></div> {% endcomment %}
+
+
+<div class="modal fade" id="editExpenseModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{% url 'edit_expenses'%}">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header ">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Expense</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-md-6 mt-3">
+                            <label for="amount" class="form-label text-light">Amount</label>
+                            <input type="number" class="form-control" name="amount" id="edit_expense_amount"
+                                placeholder="Please enter amount">
+                            <input type="hidden" name="expense" id="edit_expense_id" value="">
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <label for="amount" class="form-label text-light">Category</label>
+                            <select id="edit_expense_category" name="category" class="form-select">
+                                {% for category in categories %}
+                                <option value="{{category.category_id}}">{{category.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <label for="currency" class="form-label text-light">Date of Expense</label>
+                            <input type="date" class="form-control" name="date" id="edit_expense_date" placeholder="Please enter amount">
+                        </div>
+                        <div class="col-12 mt-3">
+                            <label for="inputAddress" class="form-label text-light">Description</label>
+                            <textarea class="form-control" name="description" id="edit_expense_description" rows="3"
+                                placeholder="Enter Description of expense"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var categoryData = {{ category_data| safe
+    }};
+    var dateData = {{ date_data| safe }};
+
+    var optionsCategory = {
+        series: [{
+            data: Object.values(categoryData)
+        }],
+        chart: {
+            type: 'bar',
+            height: 350
+        },
+        xaxis: {
+            categories: Object.keys(categoryData),
+            title: {
+                text: 'Categories'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Total Amount'
+            }
+        },
+        title: {
+            text: 'Expenses by Category',
+            align: 'center'
+        }
+    };
+
+    var categoryChart = new ApexCharts(document.querySelector("#categoryChart"), optionsCategory);
+    categoryChart.render();
+
+    var optionsTime = {
+        series: [{
+            data: Object.values(dateData)
+        }],
+        chart: {
+            type: 'line',
+            height: 350
+        },
+        xaxis: {
+            categories: Object.keys(dateData),
+            title: {
+                text: 'Date'
+            }
+        },
+        yaxis: {
+            title: {
+                text: 'Total Amount'
+            }
+        },
+        title: {
+            text: 'Expenses Over Time',
+            align: 'center'
+        }
+    };
+
+    var timeChart = new ApexCharts(document.querySelector("#timeChart"), optionsTime);
+    timeChart.render();
+});
+</script>
+
+<script>
+    function confirmDeletion() {
+        return confirm("Are you sure you want to delete this expense?");
+    }
+
+    $('.edit_expense_btn').click(function(){
+        var dateObject = new Date($(this).data('expense-date'));
+
+        // Extract year, month, and day from the date object
+        var year = dateObject.getFullYear();
+        var month = ('0' + (dateObject.getMonth() + 1)).slice(-2); // Months are zero-based
+        var day = ('0' + dateObject.getDate()).slice(-2);
+
+        // Format the date as YYYY-MM-DD
+        var formattedDate = year + '-' + month + '-' + day;
+
+        $('#edit_expense_id').val($(this).data('expense-id'))
+        $('#edit_expense_amount').val($(this).data('expense-amount'))
+        $('#edit_expense_description').val($(this).data('expense-description'))
+        $('#edit_expense_date').val(formattedDate)
+       
+    })
+</script>
+{% endblock js %}

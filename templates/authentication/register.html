@@ -1,0 +1,34 @@
+{% extends "base_auth.html" %}
+
+
+{% block content %}
+    <div class="card mt-5 bg-white border" style="box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;border:none !important;">
+
+        <div class="card-head ps-2 pe-2">
+            <h1 class="text-dark text-center">Register</h1>
+        </div>
+        <div class="card-body">
+            <div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3 text-dark">
+                        <label for="exampleFormControlInput1" class="form-label">Email address</label>
+                        <input type="email" class="form-control" name="email" placeholder="Please enter email">
+                    </div>
+                    <div class="mb-3 text-dark">
+                        <label for="exampleFormControlTextarea1" class="form-label">Password </label>
+                        <input type="password" class="form-control" name="password" placeholder="Please enter password">
+                    </div>
+                    <div class="mb-3 text-dark">
+                        <label for="exampleFormControlTextarea1" class="form-label">Confirm Password </label>
+                        <input type="password" class="form-control" name="confirmpassword" placeholder="Please enter password">
+                    </div>
+                    <div class="mt-3 mb-2 text-dark">
+                        <input type="submit" class="btn btn-info m-auto" name="submit" placeholder="Please enter password">
+                    </div>
+                </form>
+            </div>
+            <div>Already have an account? <a href="{% url 'login' %}">login</a></div>
+        </div>
+    </div>
+{% endblock content %}

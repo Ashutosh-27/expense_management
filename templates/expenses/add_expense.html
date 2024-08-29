@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container pt-5">
+    <h1>Add Expenses</h1>
+    <div class="card p-4 mt-4 mb-4">
+        
+        <form class="row g-3 text-dark" method="POST">
+            {% csrf_token %}
+            <div class="col-md-6">
+              <label for="amount" class="form-label text-light">Amount</label>
+              <input type="number" class="form-control" name="amount" id="amount" placeholder="Please enter amount">
+            </div>
+            <div class="col-md-6">
+              <label for="amount" class="form-label text-light">Category</label>
+              <select id="category" name="category" class="form-select">
+                {% for category in categories %}
+                  <option value="{{category.category_id}}">{{category.name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+                <label for="currency" class="form-label text-light">Date of Expense</label>
+                <input type="date" class="form-control" name="date" id="date" placeholder="Please enter amount">
+            </div>
+            <div class="col-12">
+              <label for="inputAddress" class="form-label text-light">Description</label>
+              <textarea class="form-control" name="description" rows="3"  placeholder="Enter Description of expense"></textarea>
+            </div>
+            <div class="col-12 d-flex justify-content-end mt-4">
+              <button type="submit" class="btn btn-light">Save</button>
+            </div>
+          </form>
+    </div>
+</div>
+{% endblock content %}

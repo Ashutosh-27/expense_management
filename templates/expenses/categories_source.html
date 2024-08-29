@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+
+{% block content%}
+<div class="container mb-5 mt-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Expense Categories</h2>
+        <button  class="btn btn-info btn-sm " data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add New Category</button>
+    </div>
+    <div class="card p-3 mt-2">
+        <table class="dataTable">
+            <thead>
+                <tr>
+                    <th>Sr.no</th>
+                    <th>Category NAme</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                
+                <tr>
+                    <td>{{ category.category_id }}</td>
+                    <td>{{ category.name }}</td>
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm deleteCategorybtn" data-category-id="{{category.category_id}}" data-category-name={{ category.name }} data-bs-toggle="modal" data-bs-target="#deleteCategoryModal">Delete</button>
+                    </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-5">
+        <h2>Income Sources</h2>
+        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#addSourceModal">Add New Source</button>
+    </div>
+    <div class="card p-3 mt-2">
+        <table class="dataTable">
+            <thead>
+                <tr>
+                    <th>Sr.no</th>
+                    <th>Source NAme</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for source in sources %}
+                
+                    <tr>
+                        <td>{{ source.source_id }}</td>
+                        <td>{{ source.name }}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm deleteSourcebtn" data-source-id="{{source.source_id}}" data-source-name={{ source.name }} data-bs-toggle="modal" data-bs-target="#deleteSourceModal">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{% url 'add_category' %}">  
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Category</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Category</label>
+                        <input  class="form-control" name="category" placeholder="Please enter category name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade" id="addSourceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{% url 'add_source' %}">  
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add Source</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Source</label>
+                        <input  class="form-control" name="source" placeholder="Please enter source name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+
+    <div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{% url 'delete_category' %}" method="POST">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Category</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete category <b id="deleteCategoryModalcname"></b>?</p>
+                    <input type="hidden" id="deleteCategoryModalcid" name="cid" >
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+
+    <div class="modal fade" id="deleteSourceModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="{% url 'delete_source' %}" method="POST">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Source</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete source <b id="deleteSourceModalcname"></b>?</p>
+                    <input type="hidden" id="deleteSourceModalsid" name="sid" >
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+{% endblock%}
+
+{% block js %}
+<script>
+     $('.deleteCategorybtn').on('click',function(){
+        $('#deleteCategoryModalcname').text($(this).data('category-name'))
+        $('#deleteCategoryModalcid').val($(this).data('category-id'))
+     })
+     $('.deleteSourcebtn').on('click',function(){
+        $('#deleteSourceModalcname').text($(this).data('source-name'))
+        $('#deleteSourceModalsid').val($(this).data('source-id'))
+     })
+</script>
+{% endblock %}
